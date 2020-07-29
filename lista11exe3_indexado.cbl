@@ -45,7 +45,6 @@
                10 fd-nota2                             pic 9(02)v99 value 00.
                10 fd-nota3                             pic 9(02)v99 value 00.
                10 fd-nota4                             pic 9(02)v99 value 00.
-               10 fd-media                             pic 9(02)V99 value zero.
 
       *>----Variaveis de trabalho
        working-storage section.
@@ -67,27 +66,7 @@
                10  nota4                            pic 9(02)v99
                                                    value 00.
 
-
-           05 media                                pic 9(02)V99 value zero.
-
-       01 wk-aluno-rel.
-           05 cod-rel                              pic 9(03).
-           05 filler                               pic X(02) value space.
-           05 aluno-rel                            pic X(12).
-           05 filler                               pic X(02) value space.
-           05 endereco-rel                         pic X(14).
-           05 filler                               pic X(02) value space.
-           05 mae-rel                              pic X(12).
-           05 filler                               pic X(02) value space.
-           05 pai-rel                              pic X(12).
-           05 filler                               pic X(02) value space.
-           05 tel-pais-rel                         pic X(08).
-           05 filler                               pic X(02) value space.
-           05 media-rel                            pic 9(02)V99 value zero.
-
-
        77  menu                                    pic x(02).
-       77  aux                                     pic x(01).
 
        01 ws-tela-menu.
           05  ws-cadastro-aluno                    pic  x(01).
@@ -99,7 +78,6 @@
           05  ws-sair                              pic  x(01).
 
        77 ws-msn                                   pic  x(50).
-       77 ws-key                                   pic  9(02).
 
        77 ws-fs-arqCadAluno                        pic 9(02).
        77 ws-msn-erro-ofsset                       pic 9(02).
@@ -195,8 +173,8 @@
            05 line 02 col 01 value "                                Consulta de Cadastro                             ".
            05 line 03 col 01 value " Cod  Aluno      Endereco       Mae         Pai        Tel          Notas        ".
 
-           05 sc-sair-cad-not         line 01  col 71 pic x(01)     using ws-sair    foreground-color 12.
-           05 sc-cadastro             line 04  col 02 pic x(76)     from  alunos     foreground-color 12.
+           05 sc-sair-cad-not         line 01  col 71 pic x(01)     using ws-sair foreground-color 12.
+           05 sc-cadastro             line 04  col 02 pic x(76)     from  alunos  foreground-color 12.
 
 
        01  tela-pede-cod-consulta.
@@ -208,7 +186,7 @@
            05 line 02 col 01 value "                                Insira o Cod de Consulta                         ".
            05 line 03 col 01 value "       Cod. Aluno:                                                               ".
 
-           05 sc-sair-cad-not         line 01  col 71 pic x(01)     using ws-sair    foreground-color 12.
+           05 sc-sair-cad-not         line 01  col 71 pic x(01)     using ws-sair foreground-color 12.
            05 sc-cod-aluno            line 03  col 19 pic 9(03)     using cod     foreground-color 15.
 
 
@@ -226,9 +204,11 @@
            move zeros to cod
       *>   inicializa menu
            move  spaces      to     menu
+
       *>   abrindo o arquivo para leitura e escrita
            open i-o arqCadAluno
 
+      *>   tratamento de file status
            if ws-fs-arqCadAluno  <> 00
            and ws-fs-arqCadAluno <> 05 then
                move 1                                to ws-msn-erro-ofsset
@@ -313,6 +293,7 @@
 
       *>   procurando o cod do prox aluno
            perform buscar-cod
+
       *>   gravando no arquivo
            write fd-alunos from alunos
 
@@ -388,6 +369,7 @@
       *>       passando os dados recebidos da tela para o arquivo
                move notas     to fd-notas
                move space     to ws-msn
+
       *>       validando as notas (de 1 a 10)
                if  nota1 >= 0 and nota1 <= 10
                and nota2 >= 0 and nota2 <= 10
@@ -444,7 +426,7 @@
 
       *>   movendo o codigo digitado para a chave do arquivo
            move cod to fd-cod
-      *>   lendo o registro de acordo com o codigo digitadi
+      *>   lendo o registro de acordo com o codigo digitado
            read arqCadAluno into alunos
 
       *>   tratamento de file status
@@ -474,6 +456,7 @@
 
       *>   achando o registro dentro do arquivo
            move cod to fd-cod
+      *>   lendo o registro de acordo com o codigo digitado
            read arqCadAluno into alunos
 
       *>   tratamento de file status
@@ -526,6 +509,8 @@
       *>------------------------------------------------------------------------
        finaliza-anormal section.
            display erase
+           display ws-msn-erro-ofsset
+           display ws-msn-erro-cod
            display ws-msn-erro-text
            Stop run
            .
