@@ -85,6 +85,9 @@
        77 ws-msn-erro-text                         pic X(42).
 
 
+       77 ws-aux                                   pic X(01).
+
+
       *>----Variaveis para comunicação entre programas
        linkage section.
 
@@ -233,6 +236,7 @@
                 move   space  to  ws-cadastro-aluno
                 move   space  to  ws-cadastro-nota
                 move   space  to  ws-consulta-cadastro
+                move   space  to  ws-consulta-seq-cadastro
                 move   space  to  ws-alterar-cadastro
                 move   space  to  ws-deletar-cadastro
                 move   space  to  ws-sair
@@ -391,24 +395,32 @@
       *>  consultar cadastro
       *>------------------------------------------------------------------------
        consultar-cadastro-seq section.
-      *>   inicializando o cod
-           move zeros to cod
 
+           move 1 to fd-cod
+
+           perform until ws-fs-arqCadAluno = 10
       *>   lendo sequencialmente ate o final
-           read arqCadAluno next into alunos
+               read arqCadAluno next into alunos
 
       *>   tratamento de file status
-           if ws-fs-arqCadAluno <> 00 and ws-fs-arqCadAluno <> 10 then
-               move 4                                 to ws-msn-erro-ofsset
-               move ws-fs-arqCadAluno                 to ws-msn-erro-cod
-               move "Erro ao ler arq. para consulta sequencial." to ws-msn-erro-text
-               perform finaliza-anormal
-           end-if
+               if ws-fs-arqCadAluno <> 00 and ws-fs-arqCadAluno <> 10 then
+                   move 4                                 to ws-msn-erro-ofsset
+                   move ws-fs-arqCadAluno                 to ws-msn-erro-cod
+                   move "Erro ao ler arq. para consulta sequencial." to ws-msn-erro-text
+                   perform finaliza-anormal
+               end-if
 
       *>   imprimindo o cadastro na tela
-           display tela-consulta-cad
-           accept tela-consulta-cad
+               display tela-consulta-cad
+               accept tela-consulta-cad
 
+               if ws-fs-arqCadAluno = 10 then
+                   display erase
+                   display "Fim de arquivo!"
+                   accept ws-aux
+               end-if
+
+           end-perform
            .
        consultar-cadastro-seq-exit.
            exit.
@@ -430,7 +442,7 @@
            read arqCadAluno into alunos
 
       *>   tratamento de file status
-           if ws-fs-arqCadAluno <> 00 then
+           if ws-fs-arqCadAluno <> 00 and ws-fs-arqCadAluno <> 10 then
                move 5                                 to ws-msn-erro-ofsset
                move ws-fs-arqCadAluno                 to ws-msn-erro-cod
                move "Erro ao ler arq. para consulta." to ws-msn-erro-text
