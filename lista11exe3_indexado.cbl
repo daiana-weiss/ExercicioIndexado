@@ -397,7 +397,7 @@
        consultar-cadastro-seq section.
 
            move 1 to fd-cod
-
+           start arqCadAluno
            perform until ws-fs-arqCadAluno = 10
       *>   lendo sequencialmente ate o final
                read arqCadAluno next into alunos
@@ -410,7 +410,7 @@
                    perform finaliza-anormal
                end-if
 
-      *>   imprimindo o cadastro na tela
+      *>       imprimindo o cadastro na tela
                display tela-consulta-cad
                accept tela-consulta-cad
 
